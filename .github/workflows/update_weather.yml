@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          persist-credentials: true  # Allows push access
 
       - name: Set up Python
         uses: actions/setup-python@v3
@@ -21,12 +23,15 @@ jobs:
         run: pip install requests pandas
 
       - name: Run Weather Script
-        run: python fetch_weather.py
+        run: python fetch_weather.py  # ✅ This runs the script
+
+      - name: Debug Check CSV File  # ✅ Check if CSV was updated
+        run: ls -la && cat combined_weather.csv
 
       - name: Commit and Push Changes
         run: |
-          git config --global user.email "your-email@example.com"
+          git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Action"
-          git add combined_weather.csv
-          git commit -m "Auto-updated weather data"
+          git add -A
+          git commit -m "🔄 Auto-updated weather data" || echo "No changes to commit"
           git push
